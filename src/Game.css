@@ -1,0 +1,9 @@
+button {
+  float: left;
+  width: 30px;
+  height: 30px;
+}
+
+.board-row {
+  display: table;
+}
