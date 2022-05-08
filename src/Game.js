@@ -19,22 +19,22 @@ const Board = () => {
   const onClick = (idx) => {
     if (winner || squares[idx]) return;
 
-    let oldSquares = squares;
-    oldSquares[idx] = turn ? "O" : "X";
-    setSquares(oldSquares);
+    let newSquares = squares.slice();
+
+    newSquares[idx] = turn ? "O" : "X";
+    setSquares(newSquares);
     // setSquares((squares) => {
     //   squares[idx] = turn ? "O" : "X";
     //   return squares;
     // });
-    console.log(squares);
-    setTurn((trun) => !trun);
+    setTurn((turn) => !turn);
   };
 
   return (
     <>
       <div>{notice}</div>
       {[0, 1, 2].map((i) => (
-        <div key={i} class="board-row">
+        <div key={i} className="board-row">
           {[0, 1, 2].map((j) => (
             <Square
               key={j}
