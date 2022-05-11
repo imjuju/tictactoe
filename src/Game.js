@@ -5,16 +5,30 @@ const Square = (props) => {
   return <button onClick={props.onClick}>{props.num}</button>;
 };
 
-const Board = () => {
-  const [squares, setSquares] = useState(new Array(9).fill(null));
-  const [turn, setTurn] = useState(false);
+const Board = (props) => {
+  return (
+    <>
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="board-row">
+          {[0, 1, 2].map((j) => (
+            <Square
+              key={j}
+              num={props.squares[i * 3 + j]}
+              onClick={() => props.onClick(i * 3 + j)}
+            />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+};
 
+const Game = () => {
+  const [history, setHistory] = useState([new Array(9).fill(null)]);
+  const [turn, setTurn] = useState(false);
+  const squares = history[history.length - 1];
   const winner = calculateWinner(squares);
   const notice = winner ? `Winner is ${winner}` : `${turn ? "O" : "X"} Turns!`;
-
-  //   useEffect(() => {
-  //     console.log(`useEffect 실행 : ${squares}`);
-  //   }, []);
 
   const onClick = (idx) => {
     if (winner || squares[idx]) return;
@@ -22,7 +36,7 @@ const Board = () => {
     let newSquares = squares.slice();
 
     newSquares[idx] = turn ? "O" : "X";
-    setSquares(newSquares);
+    setHistory((history) => [...history, newSquares]);
     // setSquares((squares) => {
     //   squares[idx] = turn ? "O" : "X";
     //   return squares;
@@ -33,26 +47,7 @@ const Board = () => {
   return (
     <>
       <div>{notice}</div>
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="board-row">
-          {[0, 1, 2].map((j) => (
-            <Square
-              key={j}
-              num={squares[i * 3 + j]}
-              onClick={() => onClick(i * 3 + j)}
-            />
-          ))}
-        </div>
-      ))}
-    </>
-  );
-};
-
-const Game = () => {
-  return (
-    <>
-      <div></div>
-      <Board />
+      <Board squares={squares} onClick={onClick} />
       <div></div>
     </>
   );
