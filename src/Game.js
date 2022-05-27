@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Game.css";
 
 const Square = (props) => {
@@ -26,21 +26,32 @@ const Board = (props) => {
 const Game = () => {
   const [history, setHistory] = useState([new Array(9).fill(null)]);
   const [turn, setTurn] = useState(false);
-  const squares = history[history.length - 1];
+  const [stepNumber, setStepNumber] = useState(0);
+  const squares = history[stepNumber];
   const winner = calculateWinner(squares);
   const notice = winner ? `Winner is ${winner}` : `${turn ? "O" : "X"} Turns!`;
+
+  const jumpTo = (idx) => {
+    setStepNumber(idx);
+    setHistory((history) => history.slice(0, idx + 1));
+    setTurn(idx % 2 === 0);
+  };
+
+  const moves = history.map((step, idx) => (
+    <li key={idx} onClick={() => jumpTo(idx)}>
+      {idx === 0 ? `Go to game start` : `Go to move ${idx}`}
+    </li>
+  ));
 
   const onClick = (idx) => {
     if (winner || squares[idx]) return;
 
-    let newSquares = squares.slice();
-
-    newSquares[idx] = turn ? "O" : "X";
-    setHistory((history) => [...history, newSquares]);
-    // setSquares((squares) => {
-    //   squares[idx] = turn ? "O" : "X";
-    //   return squares;
-    // });
+    setStepNumber((stepNumber) => stepNumber + 1);
+    setHistory((history) => {
+      const newSquares = squares.slice();
+      newSquares[idx] = turn ? "O" : "X";
+      return [...history.slice(0, stepNumber + 1), newSquares];
+    });
     setTurn((turn) => !turn);
   };
 
@@ -48,7 +59,9 @@ const Game = () => {
     <>
       <div>{notice}</div>
       <Board squares={squares} onClick={onClick} />
-      <div></div>
+      <div>
+        <ol>{moves}</ol>
+      </div>
     </>
   );
 };
